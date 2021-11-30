@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/styless.css">
+</head>
+<body>
+<div class="wrapper">
+    <div class="top">
+        <div class="title"><h1>My Blog</h1></div>
+    </div>
+    <!--This Jinja code loops through the blog_post variable in the function posts to extract each dictionay in the list-->
+    {% for blog_post in posts %}
+        <div class="content">
+        <div class="card">
+            <!-- This loops through each dictionary and uses the keys to make the extracted text from the API visible-->
+            <h2>{{ blog_post["title"] }}</h2>
+            <p class="text">{{ blog_post["subtitle"] }}</p>
+            <!-- this jinja code gets URL for he blog method in flask in main.py and the input is the blog post position in list of dictionaires -->
+            <a href="{{ url_for('get_blog', num=blog_post['id']) }}">Read More</a>
+        </div>
+        </div>
+    {% endfor %}
+</div>
+</body>
+<footer>
+    <p>Made with ♥ in London.</p>
+</footer>
+</html>
