@@ -1,5 +1,28 @@
 # requests imported to get JSON data
 import requests
+import sqlalchemy as db
+from sqlalchemy.orm import sessionmaker
+
+engine = db.create_engine('sqlite:///posts.db')
+connection = engine.connect()
+metadata = db.MetaData()
+posts = db.Table('blog_post', metadata, autoload=True, autoload_with=engine)
+
+Session = sessionmaker(bind=engine)
+session = Session()
+
+post_list = []
+
+for post in session.query(posts).all():
+    print(post)
+    post_list.append({'id':post[0],
+                      'body': post[4],
+                      'title': post[1],
+                      'subtitle': post[2]
+    })
+
+print(post_list)
+
 
 
 # This class returns blog data from an API endpoint
