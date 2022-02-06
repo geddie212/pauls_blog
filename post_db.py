@@ -1,6 +1,6 @@
 import main
 
-class Post():
+class Post:
 
     def __init__(self):
         self.posts = []
@@ -14,7 +14,7 @@ class Post():
                     'author': post.author,
                     'date': post.date,
                     'body': post.body,
-                    'parent_id': post.parent_id,
+                    'author_id': post.author_id,
                     'img_url': post.img_url
                 }
             )
@@ -25,10 +25,3 @@ class Post():
     def post_data(self, post_id):
         return self.posts[post_id]
 
-
-#title
-#subtitle
-#author
-#date
-#body
-#parent_id

@@ -9,10 +9,12 @@ from wtforms import StringField, SubmitField, EmailField, PasswordField
 from wtforms.validators import DataRequired, URL
 from flask_ckeditor import CKEditor, CKEditorField
 import post_db
+import post_comment
 from datetime import date
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 from sqlalchemy.ext.declarative import declarative_base
+from flask_gravatar import Gravatar
 
 
 app = Flask(__name__)
@@ -36,28 +38,67 @@ ckeditor = CKEditor(app)
 
 Base = declarative_base()
 
-# CONFIGURE TABLE
+
 class User(UserMixin, db.Model):
-    __tablename__ = 'User'
+    __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
-    name = db.Column(db.String(1000))
-    children = relationship('BlogPost')
+    name = db.Column(db.String(100))
+
+    # one to many relationship where the comment is assigned to the User
+    comments = relationship("Comment", back_populates="author")
+
+    # This will act like a List of BlogPost objects attached to each User.
+    # The "author" refers to the author property in the BlogPost class.
+    posts = relationship("BlogPost", back_populates="author")
+
+
+
 
 class BlogPost(db.Model):
-    __tablename__ = 'BlogPost'
+    __tablename__ = "blog_posts"
     id = db.Column(db.Integer, primary_key=True)
+
+    # Create Foreign Key, "users.id" the users refers to the tablename of User.
+    author_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    # Create reference to the User object, the "posts" refers to the posts property in the User class.
+    author = relationship("User", back_populates="posts")
+
+    # creates relationship to Comments table
+    comments = relationship("Comment", back_populates="parent_post")
+
     title = db.Column(db.String(250), unique=True, nullable=False)
     subtitle = db.Column(db.String(250), nullable=False)
     date = db.Column(db.String(250), nullable=False)
-    body = db.Column(db.String, nullable=False)
-    author = db.Column(db.String(250), nullable=False)
+    body = db.Column(db.Text, nullable=False)
     img_url = db.Column(db.String(250), nullable=False)
-    parent_id = db.Column(db.Integer, ForeignKey(User.id))
 
 
+class Comment(db.Model):
+    __tablename__ = "comments"
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String(500), nullable=False)
 
+    # foreign key which maps the post to the User ID
+    author_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    # back-populates the comments variable in User and User comments variable back to author
+    author = relationship("User", back_populates="comments")
+
+    # creates foreign key to map the comment to the post ID
+    post_id = db.Column(db.Integer, db.ForeignKey("blog_posts.id"))
+    # Creates reference to the BlogPost object, the comments property refers to comments property in BlogPost class
+    parent_post = relationship("BlogPost", back_populates="comments")
+
+
+    gravatar = Gravatar(app,
+                        size=50,
+                        rating='x',
+                        default='retro',
+                        force_default=False,
+                        force_lower=False,
+                        use_ssl=False,
+                        base_url=None)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -72,6 +113,10 @@ class CreatePostForm(FlaskForm):
     img_url = StringField("Blog Image URL", validators=[DataRequired(), URL()])
     body = CKEditorField('body')
     submit = SubmitField("Submit Post")
+
+class MakeCommentForm(FlaskForm):
+    body = CKEditorField('comment', validators=[DataRequired()])
+    submit = SubmitField('Submit Comment')
 
 
 # WTForm Register Form
@@ -109,7 +154,7 @@ def home():
     return render_template("index.html", posts=blog_posts, user_id=get_user_id())
 
 
-@app.route('/blog/<num>')
+@app.route('/blog/<num>', methods=['GET', 'POST'])
 def get_blog(num):
     # creates instance of post class
     poster = post_db.Post()
@@ -120,11 +165,28 @@ def get_blog(num):
     subtitle = poster['subtitle']
     body = poster['body']
     date = poster['date']
-    author = poster['author']
+    author = poster['author'].name
     img_url = poster['img_url']
-    # html post using the jinja inputs from the dictionary
+
+    blog_comments = post_comment.BlogComment(num).get_comments()
+
+
+
+    form = MakeCommentForm()
+    if request.method == 'POST':
+        user_id = get_user_id()
+        post_id = num
+        comment_text = form.body.data
+        new_comment = Comment(text=comment_text, author_id=user_id, post_id=post_id)
+        db.session.add(new_comment)
+        db.session.commit()
+        blog_comments = post_comment.BlogComment(num).get_comments()
+        return render_template("post.html", title=title, subtitle=subtitle, body=body, date=date, author=author,
+                               img_url=img_url, post_id=num, user_id=get_user_id(), form=form,
+                               blog_comments=blog_comments)
+
     return render_template("post.html", title=title, subtitle=subtitle, body=body, date=date, author=author,
-                           img_url=img_url, post_id=num, user_id=get_user_id())
+                           img_url=img_url, post_id=num, user_id=get_user_id(), form=form, blog_comments=blog_comments)
 
 
 @app.route('/about')
