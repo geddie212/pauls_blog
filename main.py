@@ -16,7 +16,6 @@ from functools import wraps
 from sqlalchemy.ext.declarative import declarative_base
 from flask_gravatar import Gravatar
 
-
 app = Flask(__name__)
 
 # CONNECT TO DB
@@ -54,8 +53,6 @@ class User(UserMixin, db.Model):
     posts = relationship("BlogPost", back_populates="author")
 
 
-
-
 class BlogPost(db.Model):
     __tablename__ = "blog_posts"
     id = db.Column(db.Integer, primary_key=True)
@@ -90,7 +87,6 @@ class Comment(db.Model):
     # Creates reference to the BlogPost object, the comments property refers to comments property in BlogPost class
     parent_post = relationship("BlogPost", back_populates="comments")
 
-
     gravatar = Gravatar(app,
                         size=50,
                         rating='x',
@@ -99,6 +95,7 @@ class Comment(db.Model):
                         force_lower=False,
                         use_ssl=False,
                         base_url=None)
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -113,6 +110,7 @@ class CreatePostForm(FlaskForm):
     img_url = StringField("Blog Image URL", validators=[DataRequired(), URL()])
     body = CKEditorField('body')
     submit = SubmitField("Submit Post")
+
 
 class MakeCommentForm(FlaskForm):
     body = CKEditorField('comment', validators=[DataRequired()])
@@ -133,8 +131,10 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     Login = SubmitField("Login")
 
+
 def get_user_id():
     return current_user.get_id()
+
 
 def admin_only(f):
     @wraps(f)
@@ -142,7 +142,9 @@ def admin_only(f):
         if current_user.get_id() != '1':
             return abort(403)
         return f(*args, **kwargs)
+
     return decorated_function
+
 
 @app.route('/')
 def home():
@@ -159,7 +161,7 @@ def get_blog(num):
     # creates instance of post class
     poster = post_db.Post()
     # this method extracts the dictionary from the num input in URL which contains the post data
-    poster = poster.post_data(int(num)-1)
+    poster = poster.post_data(int(num) - 1)
     # variables to be used by Jinja from the post dictionary
     title = poster['title']
     subtitle = poster['subtitle']
@@ -169,8 +171,6 @@ def get_blog(num):
     img_url = poster['img_url']
 
     blog_comments = post_comment.BlogComment(num).get_comments()
-
-
 
     form = MakeCommentForm()
     if request.method == 'POST':
