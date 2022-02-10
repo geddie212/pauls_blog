@@ -1,1 +1,1 @@
-web: gunicorn MainScriptName:app
+web: gunicorn wsgi:app
