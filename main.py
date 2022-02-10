@@ -20,9 +20,9 @@ from flask_gravatar import Gravatar
 app = Flask(__name__)
 
 # CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-if app.config['SQLALCHEMY_DATABASE_URI'] == None:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///posts.db')
+# if app.config['SQLALCHEMY_DATABASE_URI'] == None:
+#     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -34,8 +34,8 @@ bootstrap = Bootstrap(app)
 
 # SECRET KEY SETUP
 app.config["SECRET_KEY"] = os.environ.get('SECRET_KEY')
-if app.config["SECRET_KEY"] == None:
-    app.config["SECRET_KEY"] = '571ebf8e13ca209536c29be68d435c00'
+# if app.config["SECRET_KEY"] == None:
+#     app.config["SECRET_KEY"] = '571ebf8e13ca209536c29be68d435c00'
 # CK EDITOR SETUP
 ckeditor = CKEditor(app)
 
