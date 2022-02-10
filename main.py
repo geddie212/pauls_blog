@@ -20,7 +20,7 @@ from flask_gravatar import Gravatar
 app = Flask(__name__)
 
 # CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://ppjssxreytglud:ba7e7fd5500101e32100730bd0ff61c0b2b1c7cb0ff8b2cfce93ec22b99328aa@ec2-3-229-127-203.compute-1.amazonaws.com:5432/d51jhlqgn42qo'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
 # if app.config['SQLALCHEMY_DATABASE_URI'] == None:
 #     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
