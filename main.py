@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, redirect, url_for, request, flash, abort, g
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
