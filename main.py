@@ -17,11 +17,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 from sqlalchemy.ext.declarative import declarative_base
 from flask_gravatar import Gravatar
-from boto.s3.connection import S3Connection
 
 app = Flask(__name__)
 
-s3 = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'])
+
 
 # CONNECT TO DB
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
