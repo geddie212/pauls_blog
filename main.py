@@ -22,7 +22,7 @@ app = Flask(__name__)
 
 # CONNECT TO DB
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://fkmxqrweeufgyp:ef0c990ea186ff637e81050e38cc5a14692f6438195394e446b6b18b185e99ab@ec2-52-70-186-184.compute-1.amazonaws.com:5432/d5nm98be1hkdf4'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -34,7 +34,7 @@ login_manager.init_app(app)
 bootstrap = Bootstrap(app)
 
 # SECRET KEY SETUP
-app.config["SECRET_KEY"] = os.environ.get('SECRET_KEY')
+app.config["SECRET_KEY"] = '571ebf8e13ca209536c29be68d435c00'
 
 # CK EDITOR SETUP
 ckeditor = CKEditor(app)
