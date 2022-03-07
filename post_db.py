@@ -11,7 +11,7 @@ class Post:
                     'id': post.id,
                     'title': post.title,
                     'subtitle': post.subtitle,
-                    'author': post.author,
+                    'author': post.author.name,
                     'date': post.date,
                     'body': post.body,
                     'author_id': post.author_id,

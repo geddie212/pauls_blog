@@ -20,11 +20,11 @@ from flask_gravatar import Gravatar
 app = Flask(__name__)
 
 # CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
-# if app.config['SQLALCHEMY_DATABASE_URI'] == None:
-#     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://ceaugjvnkjutvo:fa8a28740a2a8996ece52bcabfafd2b0a971f1874e72fb045f990d90c7df33f4@ec2-44-192-245-97.compute-1.amazonaws.com:5432/d3qpa3ur0epea5'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -34,8 +34,7 @@ bootstrap = Bootstrap(app)
 
 # SECRET KEY SETUP
 app.config["SECRET_KEY"] = '571ebf8e13ca209536c29be68d435c00'
-# if app.config["SECRET_KEY"] == None:
-#     app.config["SECRET_KEY"] = '571ebf8e13ca209536c29be68d435c00'
+
 # CK EDITOR SETUP
 ckeditor = CKEditor(app)
 
@@ -46,7 +45,7 @@ class User(UserMixin, db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100))
+    password = db.Column(db.String())
     name = db.Column(db.String(100))
 
     # one to many relationship where the comment is assigned to the User
@@ -73,7 +72,7 @@ class BlogPost(db.Model):
     subtitle = db.Column(db.String(250), nullable=False)
     date = db.Column(db.String(250), nullable=False)
     body = db.Column(db.Text, nullable=False)
-    img_url = db.Column(db.String(250), nullable=False)
+    img_url = db.Column(db.String(), nullable=False)
 
 
 class Comment(db.Model):
@@ -171,8 +170,9 @@ def get_blog(num):
     subtitle = poster['subtitle']
     body = poster['body']
     date = poster['date']
-    author = poster['author'].name
+    author = poster['author']
     img_url = poster['img_url']
+
 
     blog_comments = post_comment.BlogComment(num).get_comments()
 
@@ -213,13 +213,13 @@ def new_post():
         subtitle = form.subtitle.data
         today_date = date.today().strftime("%d/%m/%Y")
         body = form.body.data
-        author = form.author.data
+        author = User.query.filter_by(id=int(get_user_id())).all()[0]
         img_url = form.img_url.data
         new_post = BlogPost(title=title, subtitle=subtitle, date=today_date, body=body, author=author, img_url=img_url)
         db.session.add(new_post)
         db.session.commit()
+
         blog_posts = post_db.Post()
-        # list of all the dictionaries extracted from post class containing, id, title, subtitle, body
         blog_posts = blog_posts.all_posts()
         # sends html template and uses jinja in HTML to show the posts in the blog_posts list of dictionaries
         return render_template("index.html", posts=blog_posts, user_id=get_user_id())
@@ -327,11 +327,5 @@ def login():
 
     return render_template('login.html', form=form)
 
-
-# if __name__ == "__main__":
-#     from app.main import app
-#     import os
-
 if __name__ == "__main__":
     app.run(debug=True)
-
