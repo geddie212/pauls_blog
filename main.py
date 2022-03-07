@@ -1,5 +1,4 @@
 import os
-import sys
 
 from flask import Flask, render_template, redirect, url_for, request, flash, abort, g
 from flask_bootstrap import Bootstrap
@@ -23,7 +22,7 @@ app = Flask(__name__)
 
 # CONNECT TO DB
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://fkmxqrweeufgyp:ef0c990ea186ff637e81050e38cc5a14692f6438195394e446b6b18b185e99ab@ec2-52-70-186-184.compute-1.amazonaws.com:5432/d5nm98be1hkdf4'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -35,17 +34,13 @@ login_manager.init_app(app)
 bootstrap = Bootstrap(app)
 
 # SECRET KEY SETUP
-app.config["SECRET_KEY"] = '571ebf8e13ca209536c29be68d435c00'
+app.config["SECRET_KEY"] = os.environ.get('SECRET_KEY')
 
 # CK EDITOR SETUP
 ckeditor = CKEditor(app)
 
 Base = declarative_base()
 
-import logging
-
-app.logger.addHandler(logging.StreamHandler(sys.stdout))
-app.logger.setLevel(logging.ERROR)
 
 class User(UserMixin, db.Model):
     __tablename__ = "users"
