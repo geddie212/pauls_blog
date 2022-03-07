@@ -35,7 +35,7 @@ login_manager.init_app(app)
 bootstrap = Bootstrap(app)
 
 # SECRET KEY SETUP
-app.config["SECRET_KEY"] = '571ebf8e13ca209536c29be68d435c00'
+app.config["SECRET_KEY"] = S3Connection(os.environ['SECRET_KEY'])
 
 # CK EDITOR SETUP
 ckeditor = CKEditor(app)
