@@ -1,4 +1,6 @@
 import os
+import sys
+
 from flask import Flask, render_template, redirect, url_for, request, flash, abort, g
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
@@ -40,6 +42,10 @@ ckeditor = CKEditor(app)
 
 Base = declarative_base()
 
+import logging
+
+app.logger.addHandler(logging.StreamHandler(sys.stdout))
+app.logger.setLevel(logging.ERROR)
 
 class User(UserMixin, db.Model):
     __tablename__ = "users"
