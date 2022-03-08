@@ -22,7 +22,7 @@ from flask_gravatar import Gravatar
 app = Flask(__name__)
 
 from boto.s3.connection import S3Connection
-conn = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'], os.environ['DATABASE_URL'], os.environ['SECRET_KEY'])
+conn = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'])
 conn = S3Connection()
 
 conn.get_a
