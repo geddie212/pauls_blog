@@ -21,7 +21,7 @@ from flask_gravatar import Gravatar
 
 app = Flask(__name__)
 
-SQL = str(os.environ.get('DATABASE_URL'))
+SQL = os.environ.get('DATABASE_URL').split('postgres')
 SQL[0] += 'postgresql'
 updated_SQL = f'{SQL[0]}{SQL[1]}'
 
