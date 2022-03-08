@@ -21,10 +21,13 @@ from flask_gravatar import Gravatar
 
 app = Flask(__name__)
 
+SQL = str(os.environ.get('DATABASE_URL'))
+SQL[0] += 'postgresql'
+updated_SQL = f'{SQL[0]}{SQL[1]}'
 
 # CONNECT TO DB
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = updated_SQL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
