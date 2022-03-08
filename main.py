@@ -18,14 +18,18 @@ from functools import wraps
 from sqlalchemy.ext.declarative import declarative_base
 from flask_gravatar import Gravatar
 
+
 app = Flask(__name__)
 
 from boto.s3.connection import S3Connection
-s3 = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'])
+conn = S3Connection(os.environ['S3_KEY'], os.environ['S3_SECRET'], os.environ['DATABASE_URL'], os.environ['SECRET_KEY'])
+conn = S3Connection()
+
+conn.get_a
 
 # CONNECT TO DB
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -37,7 +41,7 @@ login_manager.init_app(app)
 bootstrap = Bootstrap(app)
 
 # SECRET KEY SETUP
-app.config["SECRET_KEY"] = os.environ['SECRET_KEY']
+app.config["SECRET_KEY"] = os.getenv('SECRET_KEY')
 
 # CK EDITOR SETUP
 ckeditor = CKEditor(app)
